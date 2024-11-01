@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">parksmartapp</string>
+
+    <string-array name="tabs">
+        <item>Home</item>
+        <item>Find your Parking</item>
+        <item>Account Profile</item>
+        <item>About Section</item>
+    </string-array>
 </resources>
