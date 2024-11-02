@@ -45,6 +45,11 @@ public class About extends AppCompatActivity {
                         Intent intent = new Intent(About.this, MainActivity.class);
                         startActivity(intent);
                     }
+                    else if ("Find your Parking".equals(choice))
+                    {
+                        Intent intent = new Intent(About.this, MapActivity.class);
+                        startActivity(intent);
+                    }
                 }
                 else
                 {

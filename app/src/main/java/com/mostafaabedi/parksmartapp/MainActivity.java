@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import android.view.View;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -27,6 +28,8 @@ public class MainActivity extends AppCompatActivity {
 
         menuSpinner.setAdapter(adapter);
 
+        menuSpinner.setSelection(adapter.getPosition("Home"));
+
         menuSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
         {
             @Override
@@ -40,11 +43,25 @@ public class MainActivity extends AppCompatActivity {
                     Intent intent = new Intent(MainActivity.this, About.class);
                     startActivity(intent);
                 }
+                else if ("Find your Parking".equals(choice))
+                {
+                    Intent intent = new Intent(MainActivity.this, MapActivity.class);
+                    startActivity(intent);
+                }
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {}
 
+        });
+
+        findViewById(R.id.findParkingButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent intent = new Intent(MainActivity.this, MapActivity.class);
+                startActivity(intent);
+            }
         });
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
