@@ -7,6 +7,8 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -20,13 +22,10 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -37,7 +36,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private FusedLocationProviderClient fusedLocationClient;
     private ParkMeApiService apiService;
-    private boolean spinnerDefault = false;
+
+    private EditText durationInput;
+    private Button searchButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,52 +49,17 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         apiService = new ParkMeApiService();
 
-        // Spinner setup
-        Spinner menuSpinner = findViewById(R.id.tabMenu);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-                this, R.array.tabs, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        menuSpinner.setAdapter(adapter);
-        menuSpinner.setSelection(adapter.getPosition("Find your Parking"));
+        // Initialize input for parking duration and search button
+        durationInput = findViewById(R.id.durationInput);
+        searchButton = findViewById(R.id.searchButton);
 
-        menuSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (spinnerDefault) {
-                    String choice = parent.getItemAtPosition(position).toString();
-                    handleMenuSelection(choice);
-                } else {
-                    spinnerDefault = true;
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
-        });
+        searchButton.setOnClickListener(v -> fetchUserLocation());
 
         // Initialize map
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
-        }
-    }
-
-    private void handleMenuSelection(String choice) {
-        Intent intent;
-        switch (choice) {
-            case "Home":
-                intent = new Intent(MapActivity.this, MainActivity.class);
-                startActivity(intent);
-                break;
-            case "About Section":
-                intent = new Intent(MapActivity.this, About.class);
-                startActivity(intent);
-                break;
-            case "Account Profile":
-                intent = new Intent(MapActivity.this, AccountActivity.class);
-                startActivity(intent);
-                break;
         }
     }
 
@@ -139,20 +105,20 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 // Extract user location
                 double latitude = userLocation.getLatitude();
                 double longitude = userLocation.getLongitude();
-                int radius = 550; // Set radius to match the example request
+                int radius = 500; // Adjust as needed
 
-                System.out.println("Requesting parking data: Lat=" + latitude + ", Lng=" + longitude + ", Radius=" + radius);
+                // Get user input for parking duration
+                String durationStr = durationInput.getText().toString().trim();
+                int duration = durationStr.isEmpty() ? 60 : Integer.parseInt(durationStr); // Default 60 minutes
 
-                // Fetch parking data using the API service
-                JSONObject parkingData = apiService.fetchParkingData(latitude, longitude, radius);
-                if (parkingData == null) {
-                    throw new Exception("No data returned from API.");
-                }
-
-                // Debugging: Log the raw API response
-                System.out.println("Raw Response: " + parkingData.toString(2));
+                // Fetch parking data
+                JSONObject parkingData = apiService.fetchParkingData(latitude, longitude, radius, duration);
+                if (parkingData == null) throw new Exception("No data returned from API.");
 
                 JSONArray parkingLots = parkingData.getJSONArray("result");
+
+                // Calculate average price for markers
+                double averagePrice = calculateAveragePrice(parkingLots, duration);
 
                 runOnUiThread(() -> {
                     if (parkingLots.length() == 0) {
@@ -170,26 +136,39 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                             String note = lot.optString("note", "No additional details.");
                             JSONArray coordinates = lot.getJSONObject("point").getJSONArray("coordinates");
 
-                            LatLng lotLocation = new LatLng(
-                                    coordinates.getDouble(1), // Latitude
-                                    coordinates.getDouble(0)  // Longitude
-                            );
+                            LatLng lotLocation = new LatLng(coordinates.getDouble(1), coordinates.getDouble(0));
 
-                            // Create marker snippet with details
-                            String snippet = "Spaces: " + spacesTotal + "\nNote: " + note;
+                            // Extract price for the specified duration
+                            double price = extractPriceForDuration(lot, duration);
+
+                            // Determine marker color
+                            float color;
+                            if (price < averagePrice * 0.8) {
+                                color = BitmapDescriptorFactory.HUE_GREEN; // Cheapest
+                            } else if (price <= averagePrice * 1.2) {
+                                color = BitmapDescriptorFactory.HUE_ORANGE; // Moderate
+                            } else if (lot.optString("type").equalsIgnoreCase("Non-restricted")) {
+                                color = BitmapDescriptorFactory.HUE_RED; // Expensive
+                            } else {
+                                color = BitmapDescriptorFactory.HUE_VIOLET; // Non-public
+                            }
+
+                            // Create marker snippet
+                            String snippet = "Spaces: " + spacesTotal + "\nPrice: $" + price + "\nNote: " + note;
 
                             // Add marker to map
-                            mMap.addMarker(new MarkerOptions()
+                            Marker marker = mMap.addMarker(new MarkerOptions()
                                     .position(lotLocation)
                                     .title(name)
-                                    .snippet(snippet));
+                                    .snippet(snippet)
+                                    .icon(BitmapDescriptorFactory.defaultMarker(color)));
 
-                            // Log added marker details
-                            System.out.println("Added marker: " + name + " at " + lotLocation.latitude + ", " + lotLocation.longitude);
+                            // Attach extra data to marker
+                            marker.setTag(lot);
 
                         } catch (Exception e) {
                             e.printStackTrace();
-                            Toast.makeText(MapActivity.this, "Error processing a parking lot.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MapActivity.this, "Error processing parking lot.", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -201,36 +180,40 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }).start();
     }
 
+    private double calculateAveragePrice(JSONArray parkingLots, int duration) throws Exception {
+        double total = 0;
+        int count = 0;
 
-
-
-    private void showParkingLotDetails(Marker marker) {
-        String parkingLotInfo = marker.getTitle() + "\n" + marker.getSnippet();
-        Toast.makeText(this, parkingLotInfo, Toast.LENGTH_LONG).show();
-    }
-
-    private void navigateToParkingLot(LatLng location) {
-        Uri gmmIntentUri = Uri.parse("google.navigation:q=" + location.latitude + "," + location.longitude);
-        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-        mapIntent.setPackage("com.google.android.apps.maps");
-        if (mapIntent.resolveActivity(getPackageManager()) != null) {
-            startActivity(mapIntent);
+        for (int i = 0; i < parkingLots.length(); i++) {
+            try {
+                JSONObject lot = parkingLots.getJSONObject(i);
+                total += extractPriceForDuration(lot, duration);
+                count++;
+            } catch (Exception ignored) {}
         }
+
+        return count > 0 ? total / count : 0;
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                        == PackageManager.PERMISSION_GRANTED) {
-                    mMap.setMyLocationEnabled(true);
-                    fetchUserLocation();
-                }
-            } else {
-                Toast.makeText(this, "Location permission denied.", Toast.LENGTH_SHORT).show();
+    private double extractPriceForDuration(JSONObject lot, int duration) throws Exception {
+        JSONArray rates = lot.optJSONArray("structured_rates");
+        if (rates == null) return 0;
+
+        for (int i = 0; i < rates.length(); i++) {
+            JSONObject rate = rates.getJSONObject(i);
+            if (rate.optInt("increment") == duration || duration <= rate.optInt("max", Integer.MAX_VALUE)) {
+                return rate.optDouble("rate", 0);
             }
         }
+        return 0;
+    }
+
+    private void showParkingLotDetails(Marker marker) {
+        JSONObject lotData = (JSONObject) marker.getTag();
+        if (lotData == null) return;
+
+        Intent intent = new Intent(this, ParkingDetailsActivity.class);
+        intent.putExtra("lotData", lotData.toString());
+        startActivity(intent);
     }
 }
