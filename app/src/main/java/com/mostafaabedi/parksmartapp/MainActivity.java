@@ -1,6 +1,8 @@
 package com.mostafaabedi.parksmartapp;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -13,6 +15,9 @@ import androidx.core.view.WindowInsetsCompat;
 import android.view.View;
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final String PREFS_NAME = "AccountPrefs";
+    private static final String LOGGED_IN_KEY = "isLoggedIn";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,8 +55,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 else if ("Account Profile".equals(choice))
                 {
-                    Intent intent = new Intent(MainActivity.this, AccountActivity.class);
-                    startActivity(intent);
+                    handleAccountProfileNavigation();
                 }
             }
 
@@ -74,5 +78,18 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+    }
+
+    private void handleAccountProfileNavigation() {
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        boolean isLoggedIn = prefs.getBoolean(LOGGED_IN_KEY, false);
+
+        Intent intent;
+        if (isLoggedIn) {
+            intent = new Intent(MainActivity.this, AccountActivity.class);
+        } else {
+            intent = new Intent(MainActivity.this, AccountAccess.class);
+        }
+        startActivity(intent);
     }
 }

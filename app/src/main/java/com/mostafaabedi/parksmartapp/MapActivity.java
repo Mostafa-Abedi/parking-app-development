@@ -1,7 +1,9 @@
 package com.mostafaabedi.parksmartapp;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
@@ -33,6 +35,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private GoogleMap mMap;
     private boolean spinnerDefault = false;
+    private static final String PREFS_NAME = "AccountPrefs";
+    private static final String LOGGED_IN_KEY = "isLoggedIn";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,8 +74,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     }
                     else if ("Account Profile".equals(choice))
                     {
-                        Intent intent = new Intent(MapActivity.this, AccountActivity.class);
-                        startActivity(intent);
+                        handleAccountProfileNavigation();
                     }
                 }
                 else
@@ -154,5 +157,18 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 Toast.makeText(this, "Location permission denied", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    private void handleAccountProfileNavigation() {
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        boolean isLoggedIn = prefs.getBoolean(LOGGED_IN_KEY, false);
+
+        Intent intent;
+        if (isLoggedIn) {
+            intent = new Intent(MapActivity.this, AccountActivity.class);
+        } else {
+            intent = new Intent(MapActivity.this, AccountAccess.class);
+        }
+        startActivity(intent);
     }
 }
