@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/topToolbar"
+        android:layout_width="403dp"
+        android:layout_height="131dp"
+        android:background="#1667A8"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/companyTitle"
+        android:layout_width="203dp"
+        android:layout_height="52dp"
+        android:layout_marginEnd="145dp"
+        android:layout_marginBottom="59dp"
+        android:text="SmartPark"
+        android:textAlignment="center"
+        android:textColor="#FFFFFF"
+        android:textSize="40sp"
+        app:layout_constraintBottom_toBottomOf="@+id/topToolbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/companyLogo"
+        android:layout_width="69dp"
+        android:layout_height="52dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginBottom="59dp"
+        app:layout_constraintBottom_toBottomOf="@+id/topToolbar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/car" />
+
+    <Button
+        android:id="@+id/homeButton"
+        android:layout_width="92dp"
+        android:layout_height="52dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="9dp"
+        android:backgroundTint="#42ACFF"
+        android:text="Home"
+        app:layout_constraintBottom_toBottomOf="@+id/topToolbar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/companyTitle" />
+
+    <Button
+        android:id="@+id/mapsButton"
+        android:layout_width="92dp"
+        android:layout_height="52dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="9dp"
+        android:backgroundTint="#42ACFF"
+        android:text="Maps"
+        app:layout_constraintBottom_toBottomOf="@+id/topToolbar"
+        app:layout_constraintStart_toEndOf="@+id/homeButton"
+        app:layout_constraintTop_toBottomOf="@+id/companyTitle"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <Button
+        android:id="@+id/profileButton"
+        android:layout_width="92dp"
+        android:layout_height="52dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="9dp"
+        android:backgroundTint="#42ACFF"
+        android:text="User Profile"
+        app:layout_constraintBottom_toBottomOf="@+id/topToolbar"
+        app:layout_constraintStart_toEndOf="@+id/mapsButton"
+        app:layout_constraintTop_toBottomOf="@+id/companyTitle"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <Button
+        android:id="@+id/aboutButton"
+        android:layout_width="92dp"
+        android:layout_height="52dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="9dp"
+        android:backgroundTint="#42ACFF"
+        android:text="About Us"
+        app:layout_constraintBottom_toBottomOf="@+id/topToolbar"
+        app:layout_constraintStart_toEndOf="@+id/profileButton"
+        app:layout_constraintTop_toBottomOf="@+id/companyTitle" />
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/bottomToolbar"
+        android:layout_width="409dp"
+        android:layout_height="90dp"
+        android:background="#1667A8"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/infoText"
+        android:layout_width="335dp"
+        android:layout_height="65dp"
+        android:layout_marginBottom="15dp"
+        android:text="[Filler Text, can be random/made up contact info]"
+        android:textAlignment="center"
+        android:textColor="#FFFFFF"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/bottomToolbar"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
