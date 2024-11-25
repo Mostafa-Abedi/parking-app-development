@@ -50,6 +50,11 @@ public class About extends AppCompatActivity {
                         Intent intent = new Intent(About.this, MapActivity.class);
                         startActivity(intent);
                     }
+                    else if ("Account Profile".equals(choice))
+                    {
+                        Intent intent = new Intent(About.this, AccountActivity.class);
+                        startActivity(intent);
+                    }
                 }
                 else
                 {

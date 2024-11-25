@@ -48,6 +48,11 @@ public class MainActivity extends AppCompatActivity {
                     Intent intent = new Intent(MainActivity.this, MapActivity.class);
                     startActivity(intent);
                 }
+                else if ("Account Profile".equals(choice))
+                {
+                    Intent intent = new Intent(MainActivity.this, AccountActivity.class);
+                    startActivity(intent);
+                }
             }
 
             @Override

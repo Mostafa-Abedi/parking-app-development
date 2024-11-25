@@ -68,6 +68,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                         Intent intent = new Intent(MapActivity.this, About.class);
                         startActivity(intent);
                     }
+                    else if ("Account Profile".equals(choice))
+                    {
+                        Intent intent = new Intent(MapActivity.this, AccountActivity.class);
+                        startActivity(intent);
+                    }
                 }
                 else
                 {
