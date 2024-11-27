@@ -1,14 +1,19 @@
 package com.mostafaabedi.parksmartapp;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -40,6 +45,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private EditText durationInput;
     private Button searchButton;
 
+    private boolean spinnerDefault = false;
+    private static final String PREFS_NAME = "AccountPrefs";
+    private static final String LOGGED_IN_KEY = "isLoggedIn";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,6 +70,55 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
         }
+
+        Spinner menuSpinner = findViewById(R.id.tabMenu);
+
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+                this, R.array.tabs, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        menuSpinner.setAdapter(adapter);
+
+        menuSpinner.setSelection(adapter.getPosition("Find your Parking"));
+
+        menuSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, android.view.View view, int position, long id) {
+                if (spinnerDefault) {
+                    String choice = parent.getItemAtPosition(position).toString();
+
+                    if ("Home".equals(choice)) {
+                        Intent intent = new Intent(MapActivity.this, MainActivity.class);
+                        startActivity(intent);
+                    } else if ("About Section".equals(choice)) {
+                        Intent intent = new Intent(MapActivity.this, About.class);
+                        startActivity(intent);
+                    } else if ("Account Profile".equals(choice)) {
+                        handleAccountProfileNavigation();
+                    }
+                } else {
+                    spinnerDefault = true;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+
+        });
+    }
+
+    private void handleAccountProfileNavigation() {
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        boolean isLoggedIn = prefs.getBoolean(LOGGED_IN_KEY, false);
+
+        Intent intent;
+        if (isLoggedIn) {
+            intent = new Intent(MapActivity.this, AccountActivity.class);
+        } else {
+            intent = new Intent(MapActivity.this, AccountAccess.class);
+        }
+        startActivity(intent);
     }
 
     @Override
