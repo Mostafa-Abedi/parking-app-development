@@ -1,38 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ParkingDetailsActivity">
-    <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+
+    <!-- Toolbar -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+        <!-- Toolbar -->
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="#1667A8"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:titleTextColor="@android:color/white"
+            android:elevation="4dp" />
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:layout_margin="16dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <TextView
-            android:id="@+id/title"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:textColor="#000"
-            android:paddingBottom="8dp"
-            android:text="Parking Lot Title" />
+            android:orientation="vertical"
+            android:padding="16dp">
 
-        <TextView
-            android:id="@+id/details"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:lineSpacingExtra="4dp"
-            android:textColor="#444"
-            android:text="Details will appear here." />
+            <!-- Available Parking Spots -->
+            <TextView
+                android:id="@+id/available_spots"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/holo_green_dark"
+                android:textSize="32sp"
+                android:textStyle="bold"
+                android:gravity="center_horizontal"
+                android:paddingBottom="4dp"
+                android:text="Available Spots: 0" />
 
-    </LinearLayout>
+            <!-- Total Capacity -->
+            <TextView
+                android:id="@+id/total_capacity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#000000"
+                android:textSize="18sp"
+                android:gravity="center_horizontal"
+                android:paddingBottom="16dp"
+                android:text="Capacity: 0" />
 
+            <!-- Note -->
+            <TextView
+                android:id="@+id/note"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#555"
+                android:textSize="16sp"
+                android:paddingBottom="8dp"
+                android:text="Note: No details available." />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+            <!-- Rates -->
+            <TextView
+                android:id="@+id/rates"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#000"
+                android:textSize="16sp"
+                android:paddingBottom="8dp"
+                android:text="Rates:" />
+
+            <!-- Open Hours -->
+            <TextView
+                android:id="@+id/open_hours"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#000"
+                android:textSize="16sp"
+                android:paddingBottom="16dp"
+                android:text="Open Hours:" />
+
+            <!-- Address (Clickable for Maps) -->
+            <TextView
+                android:id="@+id/address"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/holo_blue_dark"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:paddingBottom="8dp"
+                android:text="Address: Not available"
+                android:clickable="true"
+                android:focusable="true" />
+
+            <!-- Phone Number (Clickable for Dialer) -->
+            <TextView
+                android:id="@+id/phone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/holo_blue_dark"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:paddingBottom="16dp"
+                android:text="Phone: Not available"
+                android:clickable="true"
+                android:focusable="true" />
+
+        </LinearLayout>
+    </ScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
