@@ -13,11 +13,19 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+/**
+ * The {@code AccountAccess} class manages the account access functionality for the application.
+ * It allows users to sign up, log in, and navigate to other sections of the app.
+ */
 public class AccountAccess extends AppCompatActivity {
 
     private boolean spinnerDefault = false;
     private DatabaseHelper dbHelper;
 
+    /**
+     * Called when the activity is created. Sets up the layout, initializes navigation,
+     * and handles account access functionality.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,6 +33,7 @@ public class AccountAccess extends AppCompatActivity {
 
         dbHelper = new DatabaseHelper(this);
 
+        // Set up the spinner for navigation.
         Spinner menuSpinner = findViewById(R.id.tabMenu);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
                 this, R.array.tabs, android.R.layout.simple_spinner_item);
@@ -32,6 +41,7 @@ public class AccountAccess extends AppCompatActivity {
         menuSpinner.setAdapter(adapter);
         menuSpinner.setSelection(adapter.getPosition("Account Profile"));
 
+        // Handle spinner item selection.
         menuSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, android.view.View view, int position, long id) {
@@ -54,14 +64,18 @@ public class AccountAccess extends AppCompatActivity {
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
+            public void onNothingSelected(AdapterView<?> parent) {
+                // No action required when no selection is made.
+            }
         });
 
+        // Get references to UI components.
         Button signUpButton = findViewById(R.id.signUpButton);
         Button logInButton = findViewById(R.id.logInButton);
         EditText emailField = findViewById(R.id.emailField);
         EditText passwordField = findViewById(R.id.passwordField);
 
+        // Handle sign-up button click.
         signUpButton.setOnClickListener(v -> {
             String email = emailField.getText().toString().trim();
             String password = passwordField.getText().toString().trim();
@@ -90,6 +104,7 @@ public class AccountAccess extends AppCompatActivity {
             }
         });
 
+        // Handle log-in button click.
         logInButton.setOnClickListener(v -> {
             String email = emailField.getText().toString().trim();
             String password = passwordField.getText().toString().trim();

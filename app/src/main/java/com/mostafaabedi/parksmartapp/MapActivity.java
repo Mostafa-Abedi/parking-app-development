@@ -1,6 +1,7 @@
 package com.mostafaabedi.parksmartapp;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -35,6 +36,11 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+
+/**
+ * The {@code MapActivity} class provides a map-based interface for users to
+ * find nearby parking lots based on their current location and parking duration input.
+ */
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
@@ -49,6 +55,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private static final String PREFS_NAME = "AccountPrefs";
     private static final String LOGGED_IN_KEY = "isLoggedIn";
 
+    /**
+     * Called when the activity is first created.
+     * Initializes the map, UI components, and event listeners for user interaction.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,30 +81,35 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             mapFragment.getMapAsync(this);
         }
 
+        // Set up navigation menu
         Spinner menuSpinner = findViewById(R.id.tabMenu);
-
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
                 this, R.array.tabs, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
         menuSpinner.setAdapter(adapter);
-
         menuSpinner.setSelection(adapter.getPosition("Find your Parking"));
 
+        // Set listener for menu item selection
         menuSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, android.view.View view, int position, long id) {
                 if (spinnerDefault) {
                     String choice = parent.getItemAtPosition(position).toString();
 
-                    if ("Home".equals(choice)) {
-                        Intent intent = new Intent(MapActivity.this, MainActivity.class);
-                        startActivity(intent);
-                    } else if ("About Section".equals(choice)) {
-                        Intent intent = new Intent(MapActivity.this, About.class);
-                        startActivity(intent);
-                    } else if ("Account Profile".equals(choice)) {
-                        handleAccountProfileNavigation();
+                    switch (choice) {
+                        case "Home": {
+                            Intent intent = new Intent(MapActivity.this, MainActivity.class);
+                            startActivity(intent);
+                            break;
+                        }
+                        case "About Section": {
+                            Intent intent = new Intent(MapActivity.this, About.class);
+                            startActivity(intent);
+                            break;
+                        }
+                        case "Account Profile":
+                            handleAccountProfileNavigation();
+                            break;
                     }
                 } else {
                     spinnerDefault = true;
@@ -103,11 +118,17 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
+                // No action needed when nothing is selected.
             }
 
         });
     }
 
+    /**
+     * Handles navigation to the Account Profile section.
+     * Redirects the user to either the {@code AccountActivity} if logged in,
+     * or the {@code AccountAccess} activity otherwise.
+     */
     private void handleAccountProfileNavigation() {
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         boolean isLoggedIn = prefs.getBoolean(LOGGED_IN_KEY, false);
@@ -121,6 +142,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         startActivity(intent);
     }
 
+    /**
+     * Called when the map is ready to be used.
+     * Initializes the map with user location and marker interactions.
+     *
+     * @param googleMap the Google Map instance.
+     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -143,6 +170,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         });
     }
 
+    /**
+     * Fetches the user's current location and updates the map view accordingly.
+     */
+    @SuppressLint("MissingPermission")
     private void fetchUserLocation() {
         fusedLocationClient.getLastLocation()
                 .addOnSuccessListener(location -> {
@@ -157,6 +188,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 });
     }
 
+    /**
+     * Fetches and displays nearby parking lots on the map based on user location.
+     *
+     * @param userLocation the user's current location.
+     */
     private void fetchAndDisplayParkingLots(Location userLocation) {
         new Thread(() -> {
             try {
@@ -238,6 +274,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }).start();
     }
 
+    /**
+     * Calculates the average parking price for a given duration across all parking lots.
+     *
+     * @param parkingLots a JSON array of parking lot data.
+     * @param duration    the parking duration in minutes.
+     * @return the calculated average price.
+     */
     private double calculateAveragePrice(JSONArray parkingLots, int duration) throws Exception {
         double total = 0;
         int count = 0;
@@ -253,6 +296,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         return count > 0 ? total / count : 0;
     }
 
+    /**
+     * Extracts the price for a specific duration from the parking lot JSON data.
+     *
+     * @param lot      the parking lot JSON object.
+     * @param duration the parking duration in minutes.
+     * @return the calculated price for the given duration.
+     */
     private double extractPriceForDuration(JSONObject lot, int duration) throws Exception {
         JSONArray rates = lot.optJSONArray("structured_rates");
         if (rates == null) return 0;
@@ -266,6 +316,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         return 0;
     }
 
+    /**
+     * Displays additional details about a selected parking lot.
+     *
+     * @param marker the selected marker.
+     */
     private void showParkingLotDetails(Marker marker) {
         JSONObject lotData = (JSONObject) marker.getTag();
         if (lotData == null) return;

@@ -12,6 +12,11 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+/**
+ * The {@code AccountActivity} class manages the user's account page in the application.
+ * It provides functionalities such as viewing the logged-in user's email, logging out,
+ * and navigating to the password change screen.
+ */
 public class AccountActivity extends AppCompatActivity {
 
     private static final String PREFS_NAME = "AccountPrefs";
@@ -21,6 +26,10 @@ public class AccountActivity extends AppCompatActivity {
     private String loggedInEmail;
     private boolean spinnerDefault = false;
 
+    /**
+     * Called when the activity is created. Sets up the user interface, initializes components,
+     * and handles account-related functionalities.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,6 +37,7 @@ public class AccountActivity extends AppCompatActivity {
 
         dbHelper = new DatabaseHelper(this);
 
+        // Set up the spinner for navigation.
         Spinner menuSpinner = findViewById(R.id.tabMenu);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
                 this, R.array.tabs, android.R.layout.simple_spinner_item);
@@ -35,6 +45,7 @@ public class AccountActivity extends AppCompatActivity {
         menuSpinner.setAdapter(adapter);
         menuSpinner.setSelection(adapter.getPosition("Account Profile"));
 
+        // Handle spinner item selection.
         menuSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, android.view.View view, int position, long id) {
@@ -57,9 +68,12 @@ public class AccountActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
+            public void onNothingSelected(AdapterView<?> parent) {
+                // No action needed when nothing is selected.
+            }
         });
 
+        // Get references to UI components.
         TextView displayUser = findViewById(R.id.displayUser);
         Button logoutButton = findViewById(R.id.logoutButton);
         Button changePasswordButton = findViewById(R.id.changePasswordButton);
@@ -68,6 +82,7 @@ public class AccountActivity extends AppCompatActivity {
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         loggedInEmail = prefs.getString("loggedInEmail", null);
 
+        // Display the logged-in user's email or a default message.
         if (loggedInEmail != null) {
             displayUser.setText("Welcome, " + loggedInEmail);
         } else {

@@ -6,6 +6,9 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Service for interacting with the INRIX API to authenticate and fetch parking data.
+ */
 public class ParkMeApiService {
 
     private static final String AUTH_BASE_URL = "https://api.iq.inrix.com/auth/v1/";
@@ -17,6 +20,9 @@ public class ParkMeApiService {
     private long tokenExpiryTime; // Tracks token expiry to reauthenticate if needed
     private final OkHttpClient httpClient;
 
+    /**
+     * Constructor for initializing the HTTP client with custom timeout settings.
+     */
     public ParkMeApiService() {
         this.httpClient = new OkHttpClient.Builder()
                 .connectTimeout(30, TimeUnit.SECONDS)

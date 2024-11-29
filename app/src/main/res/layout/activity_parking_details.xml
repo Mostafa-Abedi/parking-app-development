@@ -88,6 +88,16 @@
                 android:paddingBottom="16dp"
                 android:text="Open Hours:" />
 
+            <!-- EV Charging Availability -->
+            <TextView
+                android:id="@+id/ev_charging"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#000"
+                android:textSize="16sp"
+                android:paddingBottom="16dp"
+                android:text="EV Charging: Not available" />
+
             <!-- Address (Clickable for Maps) -->
             <TextView
                 android:id="@+id/address"

@@ -46,12 +46,6 @@
             android:name=".ChangePasswordActivity"
             android:exported="true" />
         <activity
-            android:name=".EditProfileActivity"
-            android:exported="true" />
-        <activity
-            android:name=".LoginActivity"
-            android:exported="true" />
-        <activity
             android:name=".AccountAccess"
             android:exported="true" />
         <meta-data
